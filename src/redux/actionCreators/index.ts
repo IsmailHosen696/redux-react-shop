@@ -1,0 +1,1 @@
+export * as shopAction from './actionCreaators';
