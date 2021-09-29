@@ -135,8 +135,12 @@ export const decreaseCount = (id: string) => {
             .get()
             .then((res) => {
                 const item = res.data() as carttype
-                if (item.count === 0) {
-                    return null
+                if (item.count === 1) {
+                    dispatch({ type: ActionTypes.REMOVE_FROM_CART, payload: { id } })
+                    firestore
+                        .collection('cartItem')
+                        .doc(id)
+                        .delete();
                 }
                 else {
                     dispatch({ type: ActionTypes.UPDATE_COUNT, payload: { id } })

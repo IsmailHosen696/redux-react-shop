@@ -11,7 +11,7 @@ export default function Nav() {
     const dispatch = useDispatch();
     const { signout } = bindActionCreators(shopAction, dispatch);
     const { showCartItem } = bindActionCreators(shopAction, dispatch);
-    const [open, setOpen] = useState<Boolean>(false)
+    const [open, setOpen] = useState<Boolean>(true)
     useEffect(() => {
         window.addEventListener('resize', e => {
             if (window.innerWidth > 620) {
@@ -26,7 +26,7 @@ export default function Nav() {
                 setOpen(false);
             }
         })
-    })
+    }, [user?.uid, showCartItem])
     return (
         <div className='flex w-full bg-amazon h-16'>
             <div className="mx-auto relative flex items-center justify-between container px-2 py-1">
@@ -35,7 +35,7 @@ export default function Nav() {
                         redux-react-store
                     </Link>
                 </div>
-                <div className="">
+                <div className="flex">
                     <div className="flex sm:hidden">
                         <i className='fas fa-bars cursor-pointer text-white' onClick={() => setOpen(!open)}></i>
                     </div>
