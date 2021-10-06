@@ -9,7 +9,7 @@ In the project directory, you can run:
 ### `yarn` 
 To Install all the dependencies .
 
-Open [http://localhost:3000](https://react-redux-shop-07.netlify.app) to view it in the browser.
+Open [this url](https://react-redux-shop-07.netlify.app) to view it in the browser.
 
 ### `yarn start`
 
