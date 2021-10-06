@@ -9,24 +9,21 @@ export default function Nav() {
     const user = useSelector((state: StateType) => state.shop.user);
     const cartitem = useSelector((state: StateType) => state.shop.cartItem);
     const dispatch = useDispatch();
-    const { signout } = bindActionCreators(shopAction, dispatch);
-    const { showCartItem } = bindActionCreators(shopAction, dispatch);
+    const { showCartItem, signout } = bindActionCreators(shopAction, dispatch);
     const [open, setOpen] = useState<Boolean>(true)
     useEffect(() => {
-        window.addEventListener('resize', e => {
+        const resizeFunction = () => {
             if (window.innerWidth > 620) {
                 setOpen(true);
             }
-        });
-
+        }
+        window.addEventListener('resize', resizeFunction);
         showCartItem(user?.uid);
 
-        return () => window.removeEventListener('resize', e => {
-            if (window.innerWidth > 620) {
-                setOpen(false);
-            }
-        })
-    }, [user?.uid, showCartItem])
+        return () => {
+            window.removeEventListener('resize', resizeFunction)
+        }
+    }, [user?.uid])
     return (
         <div className='flex w-full bg-amazon h-16'>
             <div className="mx-auto relative flex items-center justify-between container px-2 py-1">

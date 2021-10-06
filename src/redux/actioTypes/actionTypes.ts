@@ -10,6 +10,7 @@ export enum ActionTypes {
     SIGN_IN = "sign-in",
     CHECK_USER = 'check-user',
     SIGN_OUT = 'sign-out',
+    LOADING = 'loading'
 }
 
 export type ShowAllItems = {
@@ -66,6 +67,12 @@ export type ShowCartItem = {
         item: carttype[]
     }
 }
+export type SetLoading = {
+    type: ActionTypes.LOADING;
+    payload: {
+        loading: boolean
+    }
+}
 export type ShopingActionTypes = ShowAllItems |
     SignInUser |
     CheckSignUser |
@@ -74,5 +81,6 @@ export type ShopingActionTypes = ShowAllItems |
     AddToCart |
     RemoveFromCart |
     UpdateCount |
-    DecreaseCount
+    DecreaseCount |
+    SetLoading
     ;

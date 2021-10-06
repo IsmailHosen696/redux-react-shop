@@ -1,8 +1,7 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { bindActionCreators } from "redux";
+import { bindActionCreators } from 'redux';
 import { shopAction } from './redux/actionCreators';
 
 const Home = lazy(() => import('./components/Home'));
@@ -11,9 +10,9 @@ const Signin = lazy(() => import('./components/auth/Signin'));
 
 function App() {
   const dispatch = useDispatch();
-  const { checkUser } = bindActionCreators(shopAction, dispatch);
+  const { cuser } = bindActionCreators(shopAction, dispatch)
   useEffect(() => {
-    checkUser();
+    cuser();
   })
   return (
     <>

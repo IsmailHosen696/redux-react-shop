@@ -1,4 +1,4 @@
-import { AddToCart, CheckSignUser, DecreaseCount, RemoveFromCart, ShowAllItems, ShowCartItem, SignInUser, SignOut, UpdateCount } from "../actioTypes/actionTypes";
+import { AddToCart, CheckSignUser, DecreaseCount, RemoveFromCart, SetLoading, ShowAllItems, ShowCartItem, SignInUser, SignOut, UpdateCount } from "../actioTypes/actionTypes";
 import { ShopType } from "../reducers/shopinCartReducers";
 
 export const getAllItem = (state: ShopType, action: ShowAllItems) => {
@@ -71,5 +71,11 @@ export const decreaseCount = (state: ShopType, action: DecreaseCount) => {
     return {
         ...state,
         cartItem: newc
+    }
+}
+export const setloading = (state: ShopType, action: SetLoading) => {
+    return {
+        ...state,
+        loading: action.payload.loading
     }
 }

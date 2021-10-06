@@ -19,5 +19,4 @@ export type usertype = {
     uid: string | undefined;
     displayName: string | null | undefined;
     email: string | null | undefined;
-    type: string | undefined
 }

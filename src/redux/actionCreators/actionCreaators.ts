@@ -1,13 +1,12 @@
+import { UUIDGenerator } from "../../components/auth/UUID"
 import { auth, firestore, provider } from "../../db/firebase"
 import { carttype, productstype, usertype } from "../../types/typs"
 import { ActionTypes } from "../actioTypes/actionTypes"
-
 export const getAllItem = () => {
     return (dispatch: any) => {
         firestore
             .collection('products')
-            .get()
-            .then((res) => {
+            .onSnapshot((res) => {
                 const items = res.docs.map(doc => ({ id: doc.id, ...doc.data() as productstype[] }))
                 dispatch({
                     type: ActionTypes.SHOW_ALL_ITEMS,
@@ -16,67 +15,67 @@ export const getAllItem = () => {
             })
     }
 }
+
 export const signinUser = () => {
     return (dispatch: any) => {
-        auth
-            .signInWithPopup(provider)
-            .then(user => {
-                if (user.additionalUserInfo?.isNewUser) {
-                    const logedinuser: usertype = {
-                        uid: user.user?.uid,
-                        displayName: user.user?.displayName,
-                        email: user.user?.email,
-                        type: "user"
-                    }
-                    firestore.collection('users').add(logedinuser)
-                    dispatch({ type: ActionTypes.SIGN_IN, payload: { user: logedinuser } })
-                }
-                else {
-                    firestore
-                        .collection('users')
-                        .where('uid', '==', user.user?.uid)
-                        .get()
-                        .then((user) => {
-                            const luser = user.docs.map(doc => ({ ...doc.data() as usertype }))[0]
-                            dispatch({ type: ActionTypes.SIGN_IN, payload: { user: luser } })
-                        })
-                }
-            }).catch(err => {
-                console.log(err);
-            })
+        auth.signInWithRedirect(provider)
     }
 }
-export const checkUser = () => {
+export const getUser = () => {
     return (dispatch: any) => {
-        auth
-            .onAuthStateChanged(user => {
-                user &&
+        auth.getRedirectResult().then(data => {
+            if (data.user) {
+                const user: usertype = {
+                    uid: data.user.uid,
+                    email: data.user.email,
+                    displayName: data.user.displayName
+                }
+                if (data.additionalUserInfo?.isNewUser) {
+                    dispatch({ type: ActionTypes.SIGN_IN, payload: { user } })
                     firestore
                         .collection('users')
-                        .where('uid', '==', user?.uid)
-                        .get()
-                        .then((res) => {
-                            const luser = res.docs.map((doc) => doc.data() as usertype)[0]
-                            dispatch({ type: ActionTypes.CHECK_USER, payload: { user: luser } })
-                        })
-            })
+                        .add(user)
+                }
+                else {
+                    dispatch({ type: ActionTypes.SIGN_IN, payload: { user } })
+                }
+            } else {
+            }
+        }).catch(err => {
+            console.log(err);
+        })
+    }
+}
+export const cuser = () => {
+    return (dispatch: any) => {
+        auth.onAuthStateChanged(data => {
+            if (data) {
+                const user: usertype = {
+                    uid: data.uid,
+                    email: data.email,
+                    displayName: data.displayName
+                }
+                dispatch({ type: ActionTypes.SIGN_IN, payload: { user } })
+            }
+            else {
+                return null
+            }
+        })
     }
 }
 export const signout = () => {
     return (dispatch: any) => {
-        auth.signOut();
         const user: usertype = {
             uid: undefined,
             displayName: undefined,
             email: undefined,
-            type: undefined
         }
         dispatch({ type: ActionTypes.SIGN_OUT, payload: { user } })
+        auth.signOut();
     }
 }
 export const addToCart = (cart: productstype, uid: string | undefined) => {
     return (dispatch: any) => {
-        console.log(cart);
         firestore
             .collection('cartItem')
             .where('pid', '==', cart.id)
@@ -84,34 +83,33 @@ export const addToCart = (cart: productstype, uid: string | undefined) => {
             .then((res) => {
                 let item = res.docs.map(res => ({ id: res.id, ...res.data() }) as carttype)[0]
                 if (item) {
-
                     dispatch({ type: ActionTypes.UPDATE_COUNT, payload: { id: item.id } })
                     firestore.collection('cartItem').doc(item.id).update({ count: item.count + 1 })
                 }
                 else {
-                    let item = { pid: cart.id, img: cart.img, title: cart.title, price: cart.price, details: cart.details, uid, count: 1 };
+                    const id = UUIDGenerator()
+                    let item = { id, pid: cart.id, img: cart.img, title: cart.title, price: cart.price, details: cart.details, uid, count: 1 };
                     dispatch({ type: ActionTypes.ADD_TO_CART, payload: { item } })
-                    firestore.collection('cartItem').add(item)
+                    firestore.collection('cartItem').doc(id).set(item)
                 }
+            }).catch(err => {
+                console.log(err);
             })
     }
 }
 export const showCartItem = (uid: string | undefined) => {
     return (dispatch: any) => {
-        (uid !== null || uid !== undefined) && firestore
-            .collection('cartItem')
-            .get()
-            .then((res) => {
-                const data = res.docs.map(doc => ({ id: doc.id, ...doc.data() }) as carttype)
-                if (uid !== undefined) {
-                    let item = data.filter(i => i.uid === uid)
-                    dispatch({ type: ActionTypes.SHOW_CART_ITEMS, payload: { item } })
-                }
-                else {
-                    return
-                }
-            })
-            .catch(e => console.log(e))
+        if (uid !== undefined) {
+            firestore
+                .collection('cartItem')
+                .onSnapshot(snapshot => {
+                    let fdata = snapshot.docs.filter((citem) => citem.data().uid === uid).map(doc => ({ id: doc.id, ...doc.data() }) as carttype)
+                    dispatch({ type: ActionTypes.SHOW_CART_ITEMS, payload: { item: fdata } })
+                })
+        }
+        else {
+            console.log('no uid');
+        }
     }
 }
 export const updateCount = (id: string) => {

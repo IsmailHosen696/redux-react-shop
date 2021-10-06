@@ -12,8 +12,7 @@ export default function Shop() {
     useEffect(() => {
         getAllItem();
     }, []);
-    const user = useSelector((state: StateType) => state.shop.user);
-    const items = useSelector((state: StateType) => state.shop.items);
+    const { user, items } = useSelector((state: StateType) => state.shop);
     const addtocart = (id: string) => {
         let cart: productstype = items.filter(item => item.id === id)[0];
         addToCart(cart, user?.uid)

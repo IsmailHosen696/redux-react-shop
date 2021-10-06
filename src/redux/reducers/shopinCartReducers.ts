@@ -1,16 +1,18 @@
 import { productstype, carttype, usertype } from '../../types/typs';
-import { getAllItem, signinUser, checkUser, signout, addToCart, showCartItem, updateCount, decreaseCount } from '../action/action';
+import { getAllItem, signinUser, checkUser, signout, addToCart, showCartItem, updateCount, decreaseCount, setloading } from '../action/action';
 import { ActionTypes, ShopingActionTypes } from '../actioTypes/actionTypes';
 
 export type ShopType = {
     items: productstype[];
     cartItem: carttype[];
     user: usertype | null;
+    loading: boolean
 }
 const initialstate: ShopType = {
     items: [],
     cartItem: [],
-    user: null
+    user: null,
+    loading: false
 }
 export const shopingCart = (state = initialstate, action: ShopingActionTypes) => {
     switch (action.type) {
@@ -30,6 +32,8 @@ export const shopingCart = (state = initialstate, action: ShopingActionTypes) =>
             return updateCount(state, action);
         case ActionTypes.DECREASE_COUNT:
             return decreaseCount(state, action);
+        case ActionTypes.LOADING:
+            return setloading(state, action);
         default:
             return state;
     }

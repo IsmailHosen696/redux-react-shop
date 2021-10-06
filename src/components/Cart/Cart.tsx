@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux"
 import { bindActionCreators } from "redux";
 import { shopAction } from "../../redux/actionCreators";
@@ -6,6 +7,11 @@ import { StateType } from "../../redux/reducers"
 export default function Cart() {
     const cartitems = useSelector((state: StateType) => state.shop.cartItem);
     const dispatch = useDispatch();
+    const { showCartItem } = bindActionCreators(shopAction, dispatch);
+    const user = useSelector((state: StateType) => state.shop.user);
+    useEffect(() => {
+        showCartItem(user?.uid);
+    }, [user?.uid])
     const { removeFromCart, updateCount, decreaseCount } = bindActionCreators(shopAction, dispatch);
     return (
         <div className='w-full'>
